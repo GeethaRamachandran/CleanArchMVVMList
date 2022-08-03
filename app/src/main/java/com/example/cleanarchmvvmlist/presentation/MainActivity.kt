@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
 
     }
 
+
     //setting recyclerView
     private fun setupRecyclerView() {
         adapter = ItemListAdapter(this)
@@ -71,7 +72,9 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
         // search queryTextChange Listener
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(inputData: String?): Boolean {
-
+                inputData?.let {
+                    viewModelItemList.getSearchList(it.toInt())
+                }
                 return false
             }
 
@@ -80,15 +83,9 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
                     if (!it.isEmpty()) {
                         viewModelItemList.getSearchList(it.toInt())
                     }else{
-                        Log.d("Response",""+ it.isEmpty())
-                        getAllList()
+                        viewModelItemList.getList()
                     }
                 }
-                Log.d("Response","outside let")
-                getAllList()
-
-
-
 
                 return false
             }
@@ -96,7 +93,6 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
         getAllList()
         return super.onCreateOptionsMenu(menu)
     }
-
     //Get All list
     private fun getAllList() {
         lifecycle.coroutineScope.launchWhenCreated {
@@ -108,17 +104,15 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
 
                 }
                 if (it.error.isNotBlank()) {
-                    binding.tvNoData.visibility = View.VISIBLE
-                    binding.tvNoData.text = it.error
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(this@MainActivity, it.error, Toast.LENGTH_SHORT).show()
                 }
                 it.itemList?.let {
 
-                    if (it.isEmpty()) {
-
+                    if (it.isEmpty() || it.isNullOrEmpty()) {
                         binding.tvNoData.visibility = View.VISIBLE
                     }
+                    binding.tvNoData.visibility = View.GONE
                     binding.progressBar.visibility = View.GONE
                     adapter.setItems(it.toMutableList())
                 }
@@ -130,75 +124,3 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
 
     }
 }
-
-/* private fun setupObservers() {
-     getAllList()
-     //getSearchList()
- }*/
-
-/*private fun getSearchList() {
-    binding!!.svItemSearchView.inputType = InputType.TYPE_CLASS_NUMBER
-    binding!!.svItemSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-        override fun onQueryTextSubmit(s: String?): Boolean {
-            s?.let {
-
-                viewModel.getSearchItems(s.toInt()).observe(this@MainActivity, Observer {
-                    when (it.status) {
-                        Resource.Status.SUCCESS -> {
-                            binding!!.progressBar.visibility = View.GONE
-                            binding!!.rvItem.visibility = View.VISIBLE
-                            Log.i("Response", "" + it.data!!.toString())
-                            if (!it.data?.isNullOrEmpty()) {
-                                adapter.setItems(ArrayList(it.data!!))
-                                binding!!.tvNoData.visibility = View.GONE
-                            } else {
-                                adapter.setItems(ArrayList(emptyList()))
-                                binding!!.tvNoData.visibility = View.VISIBLE
-                            }
-                        }
-                        Resource.Status.ERROR ->
-                            Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_SHORT)
-                                .show()
-
-                        Resource.Status.LOADING -> {
-                            binding!!.progressBar.visibility = View.VISIBLE
-                            binding!!.rvItem.visibility = View.GONE
-                            binding!!.tvNoData.visibility = View.GONE
-                        }
-                    }
-                })
-            }
-            return false
-        }
-
-        override fun onQueryTextChange(inputData: String?): Boolean {
-            if (inputData==""){
-                getAllList()
-                binding!!.tvNoData.visibility = View.GONE
-
-            }
-            return false
-        }
-    })
-
-
-}*/
-
-/* private fun getAllList() {
-
-     viewModel.itemList.observe(this, Observer {
-         when (it.status) {
-             Resource.Status.SUCCESS -> {
-                 binding!!.progressBar.visibility = View.GONE
-                 Log.i("Response", "" + it.data!!.toString())
-                 if (!it.data?.isNullOrEmpty()) adapter.setItems(ArrayList(it.data!!))
-             }
-             Resource.Status.ERROR ->
-                 Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
-
-             Resource.Status.LOADING ->
-                 binding!!.progressBar.visibility = View.VISIBLE
-         }
-     })
- }*/
-
