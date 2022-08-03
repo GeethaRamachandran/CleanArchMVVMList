@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cleanarchmvvmlist.data.dto.ItemDto
 import com.example.cleanarchmvvmlist.databinding.ItemBinding
 import com.example.cleanarchmvvmlist.domain.model.Item
 
@@ -17,10 +16,9 @@ class ItemListAdapter(private val listener: ItemListener) : RecyclerView.Adapter
 
     private var items = mutableListOf<Item>()
 
+    //Setting Item to the adapter
     fun setItems(items: MutableList<Item>) {
         this.items=items
-       // this.items.clear()
-       // this.items.addAll(items)
         notifyDataSetChanged()
     }
 
@@ -52,6 +50,7 @@ class ItemListViewHolder(private val itemBinding: ItemBinding,
         itemBinding.tvTitle.text = items.title
     }
 
+    //We can get clickedItem
     override fun onClick(v: View?) {
         listener.onClickItem(itemDtoData.id)
     }

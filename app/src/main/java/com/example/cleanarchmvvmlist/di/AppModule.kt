@@ -1,14 +1,11 @@
 package com.example.cleanarchmvvmlist.di
 
 import com.example.cleanarchmvvmlist.common.Constants
-
-import com.example.cleanarchmvvmlist.data.remote.ItemListService
-import com.example.cleanarchmvvmlist.data.repository.ItemListRepositoryImpl
-import com.example.cleanarchmvvmlist.data.repository.ItemSearchRepositoryImpl
-import com.example.cleanarchmvvmlist.domain.repository.ItemListRepository
-import com.example.cleanarchmvvmlist.domain.repository.ItemSearchRepository
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.example.cleanarchmvvmlist.data.remote.ItemListApi
+import com.example.cleanarchmvvmlist.data.repository.ItemRepositoryImpl
+import com.example.cleanarchmvvmlist.data.repository.SearchItemRepositoryImpl
+import com.example.cleanarchmvvmlist.domain.repository.ItemRepository
+import com.example.cleanarchmvvmlist.domain.repository.SearchItemRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,39 +18,25 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-
+    @Provides
+    @Singleton
+    fun provideItemListApi(): ItemListApi {
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ItemListApi::class.java)
+    }
 
     @Provides
     @Singleton
-    fun provideItemListService(): ItemListService {
-        return Retrofit.Builder().baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-            .create(ItemListService::class.java)
+    fun provideItemRepository(api: ItemListApi): ItemRepository {
+        return ItemRepositoryImpl(api)
     }
 
-
-
-
-
-/*    @Singleton
     @Provides
-    fun provideRemoteDataSource(itemListService: ItemListService) = ItemListRemoteDataSource(itemListService)*/
-
     @Singleton
-    @Provides
-    fun provideItemListRepository(itemListService: ItemListService): ItemListRepository {
-        return ItemListRepositoryImpl(itemListService)
+    fun provideSearchItemRepository(api: ItemListApi): SearchItemRepository {
+        return SearchItemRepositoryImpl(api)
     }
-
-    @Singleton
-    @Provides
-    fun provideItemSearchRepository(itemListService: ItemListService): ItemSearchRepository {
-        return ItemSearchRepositoryImpl(itemListService)
-    }
-
-  /*  @Singleton
-    @Provides
-    fun provideRepository(remoteDataSource: ItemListRemoteDataSource
-    ) =
-        ItemListRepository(remoteDataSource)*/
 }
