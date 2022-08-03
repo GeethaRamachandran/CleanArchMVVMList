@@ -5,8 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cleanarchmvvmlist.data.dto.Item
+import com.example.cleanarchmvvmlist.data.dto.ItemDto
 import com.example.cleanarchmvvmlist.databinding.ItemBinding
+import com.example.cleanarchmvvmlist.domain.model.Item
 
 class ItemListAdapter(private val listener: ItemListener) : RecyclerView.Adapter<ItemListViewHolder>()  {
     interface ItemListener {
@@ -14,11 +15,12 @@ class ItemListAdapter(private val listener: ItemListener) : RecyclerView.Adapter
 
     }
 
-    private val items = ArrayList<Item>()
+    private var items = mutableListOf<Item>()
 
-    fun setItems(items: ArrayList<Item>) {
-        this.items.clear()
-        this.items.addAll(items)
+    fun setItems(items: MutableList<Item>) {
+        this.items=items
+       // this.items.clear()
+       // this.items.addAll(items)
         notifyDataSetChanged()
     }
 
@@ -33,24 +35,25 @@ class ItemListAdapter(private val listener: ItemListener) : RecyclerView.Adapter
     override fun getItemCount(): Int =items.size
 }
 
+
 class ItemListViewHolder(private val itemBinding: ItemBinding,
                          private val listener: ItemListAdapter.ItemListener )
     : RecyclerView.ViewHolder(itemBinding.root), View.OnClickListener {
 
-    private lateinit var itemData: Item
+    private lateinit var itemDtoData: Item
 
     init {
         itemBinding.root.setOnClickListener(this)
     }
 
     @SuppressLint("SetTextI18n")
-    fun bind(item: Item) {
-        this.itemData = item
-        itemBinding.tvTitle.text = item.title
+    fun bind(items: Item) {
+        this.itemDtoData = items
+        itemBinding.tvTitle.text = items.title
     }
 
     override fun onClick(v: View?) {
-        listener.onClickItem(itemData.id)
+        listener.onClickItem(itemDtoData.id)
     }
 
 }

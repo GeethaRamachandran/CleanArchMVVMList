@@ -1,5 +1,6 @@
 package com.example.cleanarchmvvmlist.data.remote
 
+/*
 import com.example.cleanarchmvvmlist.common.Resource
 import retrofit2.Response
 import timber.log.Timber
@@ -24,4 +25,4 @@ abstract class BaseDataSource {
         return Resource.error("Network call has failed for a following reason: $message")
     }
 
-}
+}*/

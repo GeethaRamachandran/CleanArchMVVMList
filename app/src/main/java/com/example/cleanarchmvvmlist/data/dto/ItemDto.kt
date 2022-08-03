@@ -1,8 +1,9 @@
 package com.example.cleanarchmvvmlist.data.dto
 
+import com.example.cleanarchmvvmlist.domain.model.Item
 import com.google.gson.annotations.SerializedName
 
-data class Item(
+data class ItemDto(
     @SerializedName("body")
     val body: String,
     @SerializedName("id")
@@ -12,4 +13,13 @@ data class Item(
     @SerializedName("userId")
     val userId: Int
 )
+
+fun ItemDto.toItem(): Item {
+    return Item(
+        body=body,
+        id= id,
+        title=title,
+        userId = userId
+    )
+}
 

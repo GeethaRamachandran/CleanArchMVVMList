@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import kotlinx.coroutines.Dispatchers
 
+/*
 fun <T> performGetOperation(networkCall: suspend () -> Resource<T>): LiveData<Resource<T>> =
     liveData(Dispatchers.IO) {
         emit(Resource.loading())
@@ -19,4 +20,4 @@ fun <T> performGetOperation(networkCall: suspend () -> Resource<T>): LiveData<Re
             emit(Resource.error(response.message!!))
             emitSource(data)
         }
-    }
+    }*/
