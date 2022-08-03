@@ -3,10 +3,8 @@ package com.example.cleanarchmvvmlist.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
-import android.text.TextUtils.isEmpty
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 
 import android.widget.Toast
@@ -15,10 +13,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cleanarchmvvmlist.R
-import com.example.cleanarchmvvmlist.common.Resource
 import com.example.cleanarchmvvmlist.databinding.ActivityMainBinding
 import com.example.cleanarchmvvmlist.presentation.item_list.ItemListViewModel
-import com.example.cleanarchmvvmlist.presentation.search_item_list.SearchItemListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,7 +36,7 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
 
     private fun setupObservers() {
 
-        getAllList()
+        getAllList(false)
 
     }
 
@@ -90,17 +86,18 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
                 return false
             }
         })
-        getAllList()
+        getAllList(true)
         return super.onCreateOptionsMenu(menu)
     }
     //Get All list
-    private fun getAllList() {
+    private fun getAllList(isSearching: Boolean) {
         lifecycle.coroutineScope.launchWhenCreated {
             viewModelItemList.state.collect {
                 if (it.isLoading) {
                     Log.d("Response", "isLoading: " + it.isLoading)
                     binding.tvNoData.visibility = View.GONE
                     binding.progressBar.visibility = View.VISIBLE
+                    binding.rvItem.visibility=View.GONE
 
                 }
                 if (it.error.isNotBlank()) {
@@ -109,12 +106,20 @@ class MainActivity : AppCompatActivity(), ItemListAdapter.ItemListener {
                 }
                 it.itemList?.let {
 
-                    if (it.isEmpty() || it.isNullOrEmpty()) {
-                        binding.tvNoData.visibility = View.VISIBLE
+                    if (it.isNullOrEmpty()) {
+                        if (isSearching) {
+                            binding.tvNoData.visibility = View.VISIBLE
+                            binding.progressBar.visibility = View.GONE
+                        }else{
+                            binding.progressBar.visibility = View.VISIBLE
+                            binding.tvNoData.visibility = View.GONE
+                        }
+                    }else {
+                        binding.rvItem.visibility=View.VISIBLE
+                        binding.tvNoData.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
+                        adapter.setItems(it.toMutableList())
                     }
-                    binding.tvNoData.visibility = View.GONE
-                    binding.progressBar.visibility = View.GONE
-                    adapter.setItems(it.toMutableList())
                 }
 
 
